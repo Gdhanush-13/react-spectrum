@@ -35,6 +35,7 @@ import {GroupContext} from './Group';
 import {InputContext} from './Input';
 import {LabelContext} from './Label';
 import {NumberFieldState, useNumberFieldState} from 'react-stately/useNumberFieldState';
+import {ProgressBarContext} from './ProgressBar';
 import React, {createContext, ForwardedRef, forwardRef, useRef} from 'react';
 import {TextContext} from './Text';
 import {useLocale} from 'react-aria/I18nProvider';
@@ -55,6 +56,11 @@ export interface NumberFieldRenderProps {
    * @selector [data-required]
    */
   isRequired: boolean,
+  /**
+   * Whether the number field is currently in a pending state.
+   * @selector [data-pending]
+   */
+  isPending: boolean,
   /**
    * State of the number field.
    */
@@ -96,6 +102,7 @@ export const NumberField = /*#__PURE__*/ (forwardRef as forwardRefType)(function
     inputProps,
     incrementButtonProps,
     decrementButtonProps,
+    progressBarProps,
     descriptionProps,
     errorMessageProps,
     ...validation
@@ -111,6 +118,7 @@ export const NumberField = /*#__PURE__*/ (forwardRef as forwardRefType)(function
       state,
       isDisabled: props.isDisabled || false,
       isInvalid: validation.isInvalid || false,
+      isPending: state.isPending,
       isRequired: props.isRequired || false
     },
     defaultClassName: 'react-aria-NumberField'
@@ -138,7 +146,8 @@ export const NumberField = /*#__PURE__*/ (forwardRef as forwardRefType)(function
             errorMessage: errorMessageProps
           }
         }],
-        [FieldErrorContext, validation]
+        [FieldErrorContext, validation],
+        [ProgressBarContext, progressBarProps]
       ]}>
       <dom.div
         {...DOMProps}
@@ -146,6 +155,7 @@ export const NumberField = /*#__PURE__*/ (forwardRef as forwardRefType)(function
         ref={ref}
         slot={props.slot || undefined}
         data-disabled={props.isDisabled || undefined}
+        data-pending={state.isPending || undefined}
         data-required={props.isRequired || undefined}
         data-invalid={validation.isInvalid || undefined} />
       {props.name && <input type="hidden" name={props.name} form={props.form} value={isNaN(state.numberValue) ? '' : state.numberValue} disabled={props.isDisabled || undefined} />}
